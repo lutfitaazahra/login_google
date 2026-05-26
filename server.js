@@ -44,12 +44,7 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/auth/failed' }),
   (req, res) => {
     const token = jwt.sign(req.user, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard?token=${token}`);
   }
 );
 
