@@ -22,7 +22,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback',
+  callbackURL: 'https://login-google-gamma.vercel.app/auth/google/callback',
 }, (accessToken, refreshToken, profile, done) => {
   const user = {
     id: profile.id,
@@ -46,7 +46,7 @@ app.get('/auth/google/callback',
     const token = jwt.sign(req.user, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
