@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const express = require('express');
 const passport = require('passport');
 const session = require('express-session');
@@ -22,7 +22,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://login-google-gamma.vercel.app/auth/google/callback',
+  callbackURL: 'http://localhost:5000/auth/google/callback',
 }, (accessToken, refreshToken, profile, done) => {
   const user = {
     id: profile.id,
@@ -44,7 +44,7 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/auth/failed' }),
   (req, res) => {
     const token = jwt.sign(req.user, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard?token=${token}`);
+    res.redirect(`http://localhost:3000/dashboard?token=${token}`);
   }
 );
 
@@ -69,4 +69,8 @@ app.get('/auth/failed', (req, res) => {
   res.status(401).json({ error: 'Login gagal' });
 });
 
-app.listen(5000, () => console.log('Backend jalan di port 5000'));
+if (require.main === module) {
+  app.listen(5000, () => console.log('Backend jalan di port 5000'));
+}
+
+module.exports = app;
